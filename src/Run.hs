@@ -1,4 +1,4 @@
-module Run (run) where
+module Run (run, collectSongPageLinks, pageSongToSongLink) where
 
 import Archive.Zip.Extended (
     createArchiveSafe,
@@ -16,6 +16,13 @@ import System.Directory (createDirectoryIfMissing, setCurrentDirectory)
 directory :: FilePath
 directory = "result"
 
+collectSongPageLinks :: Text -> IO [Text]
+collectSongPageLinks url = do
+    eRes <- getPageTextFromUrl $ T.unpack url
+    case eRes of
+        Left e -> print e >> pure []
+        Right resText -> pure $ processOneGamePage resText
+
 run :: IO ()
 run = do
     createDirectoryIfMissing True directory
@@ -32,6 +39,13 @@ run = do
             putStrLn "The archive is prepared"
             createArchiveSafe "result.zip" $ toArchive dataSongs
             putStrLn "Done!!!"
+
+pageSongToSongLink :: Text -> IO (Maybe Text)
+pageSongToSongLink url = do
+    eRes <- getPageTextFromUrl $ T.unpack url
+    case eRes of
+        Left e -> print e >> pure Nothing
+        Right resText -> pure (processOneSongPage resText)
 
 oneSong ::
     Int ->
