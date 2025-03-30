@@ -37,7 +37,7 @@ library
   import:           warnings
   exposed-modules:
     Archive.Zip.Extended
-    Bot.Model
+    Bot.Keyboard
     Bot.Run
     Network.HTTP.Extended
     Parser.GameOST

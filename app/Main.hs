@@ -6,7 +6,5 @@ import Run (searchGame)
 main :: IO ()
 main = do
     putStrLn "Hello, Haskell!"
-
-    searchGame "fallout"
-
--- run
+    -- searchGame "fallout"
+    run

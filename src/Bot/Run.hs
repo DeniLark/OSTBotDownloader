@@ -9,6 +9,7 @@ import Data.Text (Text)
 import qualified Data.Text as Text
 import Servant.Client (ClientEnv (ClientEnv, makeClientRequest, manager))
 
+import Bot.Keyboard
 import Control.Applicative ((<|>))
 import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Foldable (forM_)
@@ -42,6 +43,7 @@ type Model = ()
 
 data Action
     = Echo Text
+    | Start
     | FindGame Text
     | Link (Maybe SomeChatId) Text
 
@@ -59,6 +61,7 @@ updateToAction _ update =
     let someChatId = SomeChatId <$> updateChatId update
      in parseUpdate
             ( (Link someChatId <$> command "link")
+                <|> (Start <$ command "start")
                 <|> (Echo <$> text)
             )
             update
@@ -84,10 +87,24 @@ handleAction action model = case action of
                                 _ <- liftClientM $ sendAudio $ defSendAudio someChatId $ FileUrl song
                                 pure ()
     FindGame _ -> undefined
+    Start ->
+        model <# do
+            reply
+                (toReplyMessage "Найденные игры")
+                    { replyMessageReplyMarkup =
+                        Just $
+                            SomeReplyKeyboardMarkup $
+                                gameNamesToKeyboard
+                                    [ "Start"
+                                    , "Start"
+                                    , "Start"
+                                    , "Game"
+                                    , "Game"
+                                    , "Game"
+                                    , "Game Name"
+                                    ]
+                    }
 
-{-
-    search
--}
 {-
     https://downloads.khinsider.com/search?
         search=fallout      - название игры
