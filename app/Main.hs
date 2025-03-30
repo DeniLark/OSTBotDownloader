@@ -1,10 +1,12 @@
 module Main where
 
--- import Run
 import Bot.Run
+import Run (searchGame)
 
 main :: IO ()
 main = do
     putStrLn "Hello, Haskell!"
 
-    run
+    searchGame "fallout"
+
+-- run

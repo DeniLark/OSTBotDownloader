@@ -42,6 +42,7 @@ type Model = ()
 
 data Action
     = Echo Text
+    | FindGame Text
     | Link (Maybe SomeChatId) Text
 
 echoBot :: BotApp Model Action
@@ -82,5 +83,20 @@ handleAction action model = case action of
                             Just song -> do
                                 _ <- liftClientM $ sendAudio $ defSendAudio someChatId $ FileUrl song
                                 pure ()
+    FindGame _ -> undefined
+
+{-
+    search
+-}
+{-
+    https://downloads.khinsider.com/search?
+        search=fallout      - название игры
+       &type=album          - можно не менять
+       &sort=relevance      - можно не менять
+       &album_type=1        - можно не менять
+       &album_year=2009
+       &album_category=37
+-}
+-- https://downloads.khinsider.com/search?search=&type=album&sort=relevance&album_type=1&album_year=2009&album_category=37
 
 -- /link https://downloads.khinsider.com/game-soundtracks/album/space-rangers-2-dominators-windows-gamerip-2004

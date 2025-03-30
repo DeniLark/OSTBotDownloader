@@ -1,20 +1,38 @@
-module Run (run, collectSongPageLinks, pageSongToSongLink) where
+module Run where
 
-import Archive.Zip.Extended (
-    createArchiveSafe,
-    toArchive,
- )
 import Codec.Archive.Zip (EntrySelector, mkEntrySelector)
 import qualified Data.ByteString.Char8 as BS
-import Data.Foldable
 import Data.Text (Text)
 import qualified Data.Text as T
+import qualified Data.Text.IO as TIO
 import Network.HTTP.Extended
 import Parser.GameOST
-import System.Directory (createDirectoryIfMissing, setCurrentDirectory)
+import Zenacy.HTML (htmlParseEasy)
 
-directory :: FilePath
-directory = "result"
+--
+searchGame ::
+    Text -> -- game name
+    IO ()
+searchGame gameName = do
+    let url = addGameNameToRequest gameName
+
+    eRes <- getPageTextFromUrl url
+    case eRes of
+        Left e -> print e
+        Right resText -> do
+            let x = pageSearchGameToGames resText
+            print $ length x
+            mapM_ print $ pageSearchGameToGames resText
+
+addGameNameToRequest :: Text -> String
+addGameNameToRequest gameName =
+    concat
+        [ "https://downloads.khinsider.com/search?search="
+        , T.unpack gameName
+        , "&type=album&sort=relevance&album_year=&album_category=&album_type=1"
+        ]
+
+-- https://downloads.khinsider.com/search?search=fallout&type=album&sort=relevance&album_year=&album_category=&album_type=1
 
 collectSongPageLinks :: Text -> IO [Text]
 collectSongPageLinks url = do
@@ -22,23 +40,6 @@ collectSongPageLinks url = do
     case eRes of
         Left e -> print e >> pure []
         Right resText -> pure $ processOneGamePage resText
-
-run :: IO ()
-run = do
-    createDirectoryIfMissing True directory
-    setCurrentDirectory directory
-
-    eRes <- getPageTextFromUrl url1
-
-    case eRes of
-        Left e -> print e
-        Right resText -> do
-            let result = take 3 $ processOneGamePage resText
-                lengthResult = length result
-            (dataSongs, _) <- foldrM (oneSong lengthResult) ([], 1) result
-            putStrLn "The archive is prepared"
-            createArchiveSafe "result.zip" $ toArchive dataSongs
-            putStrLn "Done!!!"
 
 pageSongToSongLink :: Text -> IO (Maybe Text)
 pageSongToSongLink url = do
@@ -79,6 +80,3 @@ songDownload songUrl = do
             -- BS.writeFile fp songBytes
             es <- mkEntrySelector $ urlToFileName songUrl
             pure $ pure (es, songBytes)
-
-url1 :: URL
-url1 = "https://downloads.khinsider.com/game-soundtracks/album/space-rangers-2-dominators-windows-gamerip-2004"
