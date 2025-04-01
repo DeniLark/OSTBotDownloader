@@ -1,7 +1,18 @@
 module Bot.Keyboard where
 
+import Bot.Action
 import Data.Text (Text)
 import Telegram.Bot.API
+import Telegram.Bot.Simple.InlineKeyboard (actionButton)
+
+--                         name, link
+-- gamesToInlineKeyboard :: [(Text, Text)] -> InlineKeyboardMarkup
+-- gamesToInlineKeyboard =
+--     InlineKeyboardMarkup
+--         . foldr foldFunc []
+--   where
+--     foldFunc :: (Text, Text) -> [[InlineKeyboardButton]] -> [[InlineKeyboardButton]]
+--     foldFunc (nGame, lGame) acc = [actionButton nGame (LinkBtn lGame)] : acc
 
 createKeyboardButton :: Text -> KeyboardButton
 createKeyboardButton text =

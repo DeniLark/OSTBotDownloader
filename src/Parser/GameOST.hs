@@ -17,6 +17,7 @@ processOneGamePage text =
       songList = bodyToSongListContent body
    in songListToSongLinks songList
 
+--                                 name, link
 pageSearchGameToGames :: Text -> [(Text, Text)]
 pageSearchGameToGames text =
   let body = getBodyPage $ htmlParseEasy text

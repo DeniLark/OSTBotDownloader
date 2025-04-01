@@ -20,6 +20,7 @@ common warnings
   build-depends:
     , base                 ^>=4.17.2.1
     , bytestring
+    , containers
     , directory
     , http-client-tls
     , http-conduit
@@ -37,7 +38,9 @@ library
   import:           warnings
   exposed-modules:
     Archive.Zip.Extended
+    Bot.Action
     Bot.Keyboard
+    Bot.Model
     Bot.Run
     Network.HTTP.Extended
     Parser.GameOST

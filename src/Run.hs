@@ -9,28 +9,28 @@ import Network.HTTP.Extended
 import Parser.GameOST
 import Zenacy.HTML (htmlParseEasy)
 
---
-searchGame ::
-    Text -> -- game name
-    IO ()
+--                         name, link
+searchGame :: Text -> IO [(Text, Text)]
 searchGame gameName = do
     let url = addGameNameToRequest gameName
+    putStrLn url
 
     eRes <- getPageTextFromUrl url
     case eRes of
-        Left e -> print e
-        Right resText -> do
-            let x = pageSearchGameToGames resText
-            print $ length x
-            mapM_ print $ pageSearchGameToGames resText
+        Left e -> print e >> pure []
+        Right resText -> pure $ pageSearchGameToGames resText
 
 addGameNameToRequest :: Text -> String
 addGameNameToRequest gameName =
     concat
         [ "https://downloads.khinsider.com/search?search="
-        , T.unpack gameName
+        , map mapFunc $ T.unpack gameName
         , "&type=album&sort=relevance&album_year=&album_category=&album_type=1"
         ]
+  where
+    mapFunc :: Char -> Char
+    mapFunc ' ' = '+'
+    mapFunc c = c
 
 -- https://downloads.khinsider.com/search?search=fallout&type=album&sort=relevance&album_year=&album_category=&album_type=1
 
