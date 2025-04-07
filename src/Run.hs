@@ -25,7 +25,6 @@ addGameNameToRequest gameName =
     concat
         [ "https://downloads.khinsider.com/search?search="
         , map mapFunc $ T.unpack gameName
-        , "&type=album&sort=relevance&album_year=&album_category=&album_type=1"
         ]
   where
     mapFunc :: Char -> Char
